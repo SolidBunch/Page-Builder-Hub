@@ -1,6 +1,6 @@
 <?php
 
-namespace StarterKit\Helper;
+namespace PBH\Helper;
 
 /**
  * Utilities
@@ -8,7 +8,7 @@ namespace StarterKit\Helper;
  * Helper functions
  *
  * @category   Wordpress
- * @package    Starter Kit Backend
+ * @package    Page Builder Hub
  * @author     SolidBunch
  * @link       https://solidbunch.com
  * @version    Release: 1.0.0
@@ -134,7 +134,7 @@ class Utils {
 	 * @return string
 	 */
 	public static function get_shortcodes_uri( $shortcode_name, $path = '' ) {
-		return \Starter_Kit()->config['shortcodes_uri'] . $shortcode_name . '/' . $path;
+		return \PBH()->config['shortcodes_uri'] . $shortcode_name . '/' . $path;
 	}
 	
 	/**
@@ -146,7 +146,7 @@ class Utils {
 	 * @return string
 	 */
 	public static function get_shortcodes_dir( $shortcode_name, $path = '' ) {
-		return \Starter_Kit()->config['shortcodes_dir'] . $shortcode_name . '/' . $path;
+		return \PBH()->config['shortcodes_dir'] . $shortcode_name . '/' . $path;
 	}
 	
 	/**
@@ -158,7 +158,7 @@ class Utils {
 	 * @return string
 	 */
 	public static function get_widgets_uri( $widget_name, $path = '' ) {
-		return \Starter_Kit()->config['widgets_uri'] . '/' . $widget_name . '/' . $path;
+		return \PBH()->config['widgets_uri'] . '/' . $widget_name . '/' . $path;
 	}
 	
 	/**
@@ -170,7 +170,7 @@ class Utils {
 	 * @return string
 	 */
 	public static function get_widgets_dir( $widget_name, $path = '' ) {
-		return \Starter_Kit()->config['widgets_dir'] . '/' . $widget_name . '/' . $path;
+		return \PBH()->config['widgets_dir'] . '/' . $widget_name . '/' . $path;
 	}
 	
 	/**
@@ -180,7 +180,7 @@ class Utils {
 		
 		$config = array();
 		
-		foreach ( \Starter_Kit()->config['social_profiles'] as $k => $v ) {
+		foreach ( \PBH()->config['social_profiles'] as $k => $v ) {
 			$config[ $k ] = array(
 				'type'  => 'text',
 				'label' => $v,

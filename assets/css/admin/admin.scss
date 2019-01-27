@@ -1,27 +1,11 @@
 /**
- * Add custom icons for custom post types
+ * Admin styles
 **/
 
-#menu-posts-video .wp-menu-image:before {
-  content: '\f126';
-}
-
-#menu-posts-team_members .wp-menu-image:before {
-  content: '\f110';
-}
-
-#menu-posts-portfolio .wp-menu-image:before {
-  content: '\f322';
-}
-
-#menu-posts-testimonials .wp-menu-image:before {
-  content: '\f130';
-}
-
-#menu-posts-composerlayout .wp-menu-image:before {
-  content: '\f134';
-} 
-
-.fw-brz-dismiss {
-  display: none;
+.pbh-page {
+  border:1px red solid;
+  margin-left: -20px;
+  @media only screen and (max-width: 782px) {
+     margin-left:-10px;
+   }
 }

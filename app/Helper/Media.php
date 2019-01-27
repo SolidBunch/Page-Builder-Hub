@@ -1,5 +1,5 @@
 <?php
-namespace StarterKit\Helper;
+namespace PBH\Helper;
 
 /**
  * Media Helper
@@ -7,7 +7,7 @@ namespace StarterKit\Helper;
  * Helper functions for work with media objects
  *
  * @category   Wordpress
- * @package    Starter Kit Backend
+ * @package    Page Builder Hub
  * @author     SolidBunch
  * @link       https://solidbunch.com
  * @version    Release: 1.0.0
@@ -44,7 +44,7 @@ class Media {
 		$func_atts = wp_parse_args( $func_atts, $func_dafault_atts );
 
 		if ( ! class_exists( 'Aq_Resize' )) {
-			require_once get_template_directory() . '/vendor/aq_resizer/aq_resizer.php';
+			require_once PBH_PLUGIN_DIR . '/vendor/aq_resizer/aq_resizer.php';
 		}
 
 		if ( ( empty($image_atts['src']) && empty($func_atts['attachment_id']) ) or ( !empty($image_atts['src']) &&  $image_atts['src'] ===  get_the_post_thumbnail_url( get_the_ID(), 'full' ) ) ) {
@@ -142,7 +142,7 @@ class Media {
 	 */
 	public static function img_resize( $url, $width, $height, $crop = true ) {
 		if ( ! class_exists( 'Aq_Resize' ) ) {
-			require_once \get_template_directory() . '/vendor/aq_resizer/aq_resizer.php';
+			require_once \PBH_PLUGIN_DIR . '/vendor/aq_resizer/aq_resizer.php';
 		}
 
 		if ( strpos( $url, 'http' ) !== 0 ) {

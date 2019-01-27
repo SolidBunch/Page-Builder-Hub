@@ -1,7 +1,6 @@
 <?php
-
-/**
- * The plugin bootstrap file
+/*
+ * Page Builder Hub plugin for Wordpress
  *
  * @category   Wordpress
  * @package    Page Builder Hub
@@ -10,9 +9,8 @@
  * @version    Release: 1.0.0
  * @since      1.0.0
  *
- * @starter-kit-plugin
  * Plugin Name: Page Builder Hub
- * Plugin URI: https://github.com/SolidBunch/Page-Builder-Hub
+ * Plugin URI: https://github.com/SolidBunch/page-builder-hub
  * Description: Wordpress plugin, a library of premium quality content elements for different page builders.
  * Version: 1.0.0
  * Author: SolidBunch
@@ -21,24 +19,37 @@
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: page-builder-hub
  * Domain Path: /languages
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  */
-
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-/**
- * Currently plugin version.
- * Start at version 1.0.0 and use SemVer - https://semver.org
- * Rename this for your plugin and update it as you release new versions.
- */
-define( 'PLUGIN_NAME_VERSION', '1.0.0' );
+if ( ! defined( 'PBH_VERSION' ) ) {
+	define( 'PBH_VERSION', '1.0' );
+}
+if ( ! defined( 'PBH_PLUGIN_DIR' ) ) {
+    define( 'PBH_PLUGIN_DIR', untrailingslashit(plugin_dir_path( __FILE__ )) );
+}
+if ( ! defined( 'PBH_PLUGIN_URL' ) ) {
+    define( 'PBH_PLUGIN_URL', untrailingslashit(plugin_dir_url( __FILE__ )) );
+}
 
 // helper functions for developers
 require_once __DIR__ . '/app/dev.php';
 
+/*
 if(class_exists('WP_CLI')) {
 	//define theme root directory for future commands
 	define('THEME_ROOT_DIRECTORY' , __DIR__);
@@ -47,23 +58,12 @@ if(class_exists('WP_CLI')) {
 		require $file;
 	}
 }
+*/
 
-
-/**
- * After registering this autoload function with SPL, the following line
- * would cause the function to attempt to load the \Foo\Bar\Baz\Qux class
- * from /path/to/project/src/Baz/Qux.php:
- *
- *      new \Foo\Bar\Baz\Qux;
- *
- * @param string $class The fully-qualified class name.
- *
- * @return void
- */
 spl_autoload_register( function ( $class ) {
 	
 	// project-specific namespace prefix
-	$prefix = 'StarterKit\\';
+	$prefix = 'PBH\\';
 	
 	// base directory for the namespace prefix
 	$base_dir = __DIR__ . '/app/';
@@ -90,13 +90,11 @@ spl_autoload_register( function ( $class ) {
 } );
 
 // Global point of enter
-if ( ! function_exists( 'Starter_Kit' ) ) {
+if ( ! function_exists( 'PBH' ) ) {
 	
-	function Starter_Kit() {
-		return \StarterKit\App::getInstance();
+	function PBH() {
+		return \PBH\App::getInstance();
 	}
 	
 }
-
-// Run the theme
-Starter_Kit()->run();
+PBH()->run();

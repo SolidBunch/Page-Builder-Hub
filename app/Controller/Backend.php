@@ -1,5 +1,5 @@
 <?php
-namespace StarterKit\Controller;
+namespace PBH\Controller;
 
 /**
  * Backend controller
@@ -8,7 +8,7 @@ namespace StarterKit\Controller;
  * contains all needed additional hooks,methods
  *
  * @category   Wordpress
- * @package    Starter Kit Backend
+ * @package    Page Builder Hub
  * @author     SolidBunch
  * @link       https://solidbunch.com
  * @version    Release: 1.0.0
@@ -25,14 +25,29 @@ class Backend {
 
 		// load admin assets
 		add_action( 'admin_enqueue_scripts', array( $this, 'load_assets' ) );
-
-		// install required plugins
-		require_once get_template_directory() . '/vendor/tgm/class-tgm-plugin-activation.php';
-		add_action( 'tgmpa_register', array( $this, 'tgmpa_register' ) );
+		
+		//add_action( 'admin_init', [ $this, 'admin_init' ] );
+		add_action( 'admin_menu', [ $this, 'admin_menu' ] );
 
 		// Change theme options default menu position
 		add_action( 'fw_backend_add_custom_settings_menu', array( $this, 'add_theme_options_menu' ) );
 
+	}
+	
+	/**
+	 * Plugin admin init
+	 *
+	 */
+	public function admin_menu() {
+		add_menu_page( __('Page Builder Hub', '{domain}'), __('Page Builder Hub', '{domain}'), 'manage_options', 'pbh', [$this, 'admin_page'] );
+		add_submenu_page( 'pbh', __('Add-ons', '{domain}'), __('Add-ons', '{domain}'), 'manage_options', 'pbh', [$this, 'admin_page']);
+		add_submenu_page( 'pbh', __('Settings', '{domain}'), __('Settings', '{domain}'), 'manage_options', 'pbh-settings', [$this, 'admin_page']);
+		add_submenu_page( 'pbh', __('About', '{domain}'), __('About', '{domain}'), 'manage_options', 'pbh-about', [$this, 'admin_page']);
+	}
+	
+	public function admin_page() {
+		$view = str_replace(['toplevel_page_','page-builder-hub_page_'],  '', current_action());
+		PBH()->View->load('/'.$view);
 	}
 
 	/**
@@ -41,39 +56,8 @@ class Backend {
 	 * @return void
 	 **/
 	public function load_assets() {
-		wp_enqueue_style( 'starter-kit-backend', get_template_directory_uri() . '/assets/css/admin/admin.css',
-			false, Starter_Kit()->config['cache_time'] );
-	}
-
-	/**
-	 * Install required plugins
-	 *
-	 * @return void
-	 **/
-	public function tgmpa_register() {
-
-		$plugins = array(
-
-			array(
-				'name'     => 'Unyson',
-				'slug'     => 'unyson',
-				'required' => false
-			),
-
-			array(
-				'name'         => 'WPBakery Page Builder',
-				'slug'         => 'js_composer',
-				'source'       => 'https://solidbunch.com/required_plugins/js_composer.zip',
-				'required'     => false,
-				'version'      => '',
-				'external_url' => '',
-			),
-
-		);
-
-		// it is not necessairy to provide custom language config for TGM, so just leave it default
-		tgmpa( $plugins );
-
+		wp_enqueue_style( 'page-builder-hub-backend', PBH_PLUGIN_URL . '/assets/css/admin/admin.css',
+			false, PBH()->config['cache_time'] );
 	}
 
 	/**
@@ -86,8 +70,8 @@ class Backend {
 	public function add_theme_options_menu( array $data ) {
 
 		add_theme_page(
-			esc_html__( 'Website Settings', 'starter-kit' ),
-			esc_html__( 'Website Settings', 'starter-kit' ),
+			esc_html__( 'Website Settings', 'page-builder-hub' ),
+			esc_html__( 'Website Settings', 'page-builder-hub' ),
 			$data['capability'],
 			$data['slug'],
 			$data['content_callback']

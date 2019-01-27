@@ -1,5 +1,5 @@
 <?php
-namespace StarterKit\Helper;
+namespace PBH\Helper;
 
 /**
  * Front Helper
@@ -7,7 +7,7 @@ namespace StarterKit\Helper;
  * Helper functions for templates and front controllers
  *
  * @category   Wordpress
- * @package    Starter Kit Backend
+ * @package    Page Builder Hub
  * @author     SolidBunch
  * @link       https://solidbunch.com
  * @version    Release: 1.0.0

@@ -1,6 +1,6 @@
 <?php
 
-namespace StarterKit\Widgets\social_icons;
+namespace PBH\Widgets\social_icons;
 
 class widget extends \WP_Widget {
 
@@ -11,7 +11,7 @@ class widget extends \WP_Widget {
 
 		$widget_ops = array(
 			'classname'   => 'social_icons_widget',
-			'description' => esc_html__( 'A widget that displays social icons', 'starter-kit' )
+			'description' => esc_html__( 'A widget that displays social icons', 'page-builder-hub' )
 		);
 
 		$control_ops = array(
@@ -22,7 +22,7 @@ class widget extends \WP_Widget {
 
 		parent::__construct(
 			'social_icons_widget',
-			esc_html__( '[STARTER KIT] Social Icons', 'starter-kit' ),
+			esc_html__( '[STARTER KIT] Social Icons', 'page-builder-hub' ),
 			$widget_ops,
 			$control_ops
 		);
@@ -38,7 +38,7 @@ class widget extends \WP_Widget {
 		if ( is_active_widget( false, false, $this->id_base, true ) ) {
 			wp_enqueue_style( 'font-awesome' );
 
-			//wp_enqueue_style( 'my-style', \StarterKit\Helper\Utils::get_widgets_uri( 'social_icons', '/assets/my-style.css') );
+			//wp_enqueue_style( 'my-style', \PBH\Helper\Utils::get_widgets_uri( 'social_icons', '/assets/my-style.css') );
 
 		}
 	}
@@ -58,7 +58,7 @@ class widget extends \WP_Widget {
 	 **/
 	function form( $instance ) {
 
-		Starter_Kit()->View->load(
+		PBH()->View->load(
 			'/view/backend',
 			array(
 				'widget'   => $this,
@@ -75,7 +75,7 @@ class widget extends \WP_Widget {
 	 **/
 	function widget( $args, $instance ) {
 
-		Starter_Kit()->View->load(
+		PBH()->View->load(
 			'/view/frontend',
 			array(
 				'args'     => $args,

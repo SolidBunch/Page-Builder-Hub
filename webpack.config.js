@@ -1,25 +1,129 @@
-const configs = [
-    require('./build/core.config'),
-    require('./build/shortcodes.config'),
-    require('./build/widgets.config')
-];
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const glob = require('glob');
+const path = require('path');
+let dir = path.resolve();
 
-function isEmptyObject(obj) {
-    for(var key in obj) {
-        if(obj.hasOwnProperty(key))
-            return false;
-    }
-    return true;
-}
+const pathTo = dir.replace(/\\/g, '/') + '/addons_source/gutenberg/';
 
-const config = [];
+// Read all styles.scss from shortcodes
+const stylesArray = glob.sync(pathTo + '**/assets/css/styles.scss');
 
-const SYNC = process.env.SYNC;
+let assetsObject = stylesArray.reduce((acc, item) => {
+	let name = item.replace(pathTo, '');
+	name = name.replace('/assets/css/styles.scss', '');
+	acc[name] = new Array(item);
+	return acc;
+}, {});
 
-configs.forEach(function (item) {
-    if(typeof item.entry !== 'undefined' && isEmptyObject(item.entry) === false ) {
-        config.push(item);
-    }
-});
+// Read all scripts.js from shortcodes
+const scriptsArray = glob.sync(pathTo + '**/block/block.js');
+scriptsArray.reduce((acc, item) => {
 
-module.exports = config;
+	let name = item.replace(pathTo, '');
+	name = name.replace('/block/block.js', '');
+	if (Array.isArray(assetsObject[name]) === true) {
+		assetsObject[name].push(item);
+	} else {
+		assetsObject[name] = new Array(item);
+	}
+}, {});
+
+
+module.exports = {
+	entry: assetsObject,
+	externals: {
+		jquery: 'jQuery'
+	},
+	optimization: {
+		minimizer: [
+			// enable the js minification plugin
+			new UglifyJSPlugin({
+				test: /\.js(\?.*)?$/i,
+				sourceMap: false,
+				extractComments: true,
+				parallel: true,
+				uglifyOptions: {
+					warnings: false,
+					compress: {
+						unsafe: true,
+						inline: true,
+						passes: 2,
+						keep_fargs: false,
+					},
+					mangle: true, // Note `mangle.properties` is `false` by default.
+					output: {
+						beautify: false,
+					},
+					toplevel: false,
+					ie8: false,
+				}
+			}),
+			//enable the css minification plugin
+			new OptimizeCSSAssetsPlugin({
+				cssProcessor: require('cssnano'),
+				cssProcessorPluginOptions: {
+					preset: ['default', {discardComments: {removeAll: true}}],
+					canPrint: true
+				}
+			})
+		]
+	},
+	output: {
+		path: dir,
+		filename: "core/gutenberg_blocks/[name]/block/block.build.js"
+	},
+	module: {
+		rules: [
+			// compile all .scss files to plain old css
+			{
+				test: /\.(sass|scss)$/,
+				use: [
+					// MiniCssExtractPlugin.loader,
+					// {loader: 'css-loader', options: {sourceMap: false, minimize: true}},
+					{loader: 'postcss-loader'},
+					{loader: 'sass-loader', options: {sourceMap: false, minimize: true}},
+				]
+			},
+			// fonts loader
+			{
+				test: /.(ttf|otf|eot|woff(2)?)(\?[a-z0-9]+)?$/,
+				use: [{
+					loader: 'file-loader',
+					options: {
+						name: '[name].[ext]',
+						outputPath: './assets/fonts/',
+						publicPath: '../../../../assets/fonts/'       // override the default path
+					}
+				}]
+			},
+			{
+				test: /\.(png|jpg|svg|gif)$/i,
+				use: [{
+					loader: 'file-loader',
+					options: {
+						name: '[name].[ext]',
+						outputPath: './assets/img/',    // where the fonts will go
+						publicPath: '../../../../assets/img/'       // override the default path
+					}
+				}]
+			},
+			//babel
+			{
+				test: /\.js$/,
+				exclude: /(node_modules|bower_components)/,
+				use: [{
+					loader: 'babel-loader',
+					options: { babelrc: true }
+				}]
+			}
+		]
+	},
+	devtool: 'source-map',
+	plugins: [
+		new MiniCssExtractPlugin({
+			filename: 'addons/gutenberg/[name]/assets/ock/block.css'
+		})
+	]
+};

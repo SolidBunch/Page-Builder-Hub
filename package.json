@@ -1,10 +1,11 @@
 {
-  "name": "starter-kit",
+  "name": "page-builder-hub",
   "version": "1.0.0",
-  "description": "Starter Kit Theme",
+  "description": "Page Builder Hub",
   "dependencies": {
     "animate.css": "^3.7.0",
     "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
     "bootstrap": "^4.1.3",
     "fast-async": "^6.3.8",
     "font-awesome": "^4.7.0",
@@ -67,13 +68,22 @@
     "Opera >= 30"
   ],
   "scripts": {
-    "replaceNames": "./node_modules/.bin/gulp replaceNames",
-    "gulp": "./node_modules/.bin/gulp watch",
+    "replaceNames": "gulp replaceNames",
+    "gulp": "gulp watch",
     "dev": "webpack --mode development --hide-modules --progress --color",
     "prod": "webpack --mode production --hide-modules --progress --color",
     "watch": "webpack --watch --mode development --hide-modules --progress --color",
     "browser-sync": "cross-env SYNC=\"true\" webpack --watch --mode development --hide-modules --progress --color"
   },
   "author": "SolidBunch",
-  "license": "GPL-3.0"
+  "license": "GPL-3.0",
+  "main": "gulpfile.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SolidBunch/page-builder-hub.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SolidBunch/page-builder-hub/issues"
+  },
+  "homepage": "https://github.com/SolidBunch/page-builder-hub#readme"
 }

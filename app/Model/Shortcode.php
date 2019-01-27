@@ -1,13 +1,13 @@
 <?php
-namespace StarterKit\Model;
+namespace PBH\Model;
 
-use StarterKit\Helper\Utils;
+use PBH\Helper\Utils;
 
 /**
  * Shortcode model
  *
  * @category   Wordpress
- * @package    Starter Kit Backend
+ * @package    Page Builder Hub
  * @author     SolidBunch
  * @link       https://solidbunch.com
  * @version    Release: 1.0.0
@@ -81,7 +81,7 @@ class Shortcode {
 			} else {
 				$css_class = $this->custom_css_class($atts['css']);
 				if (!empty($css_class)) {
-					Starter_Kit()->Controller->Shortcodes->custom_css[] = $atts['css'];
+					PBH()->Controller->Shortcodes->custom_css[] = $atts['css'];
 				}
 			}
 			//dump( $this->shortcode );

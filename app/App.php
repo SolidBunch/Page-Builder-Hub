@@ -1,10 +1,10 @@
 <?php
 
-namespace StarterKit;
+namespace PBH;
 
-use StarterKit\Helper\Utils;
-use StarterKit\Model\Database;
-use StarterKit\View\View;
+use PBH\Helper\Utils;
+use PBH\Model\Database;
+use PBH\View\View;
 
 /**
  * Application Singleton
@@ -12,7 +12,7 @@ use StarterKit\View\View;
  * Primary application controller
  *
  * @category   Wordpress
- * @package    Starter Kit Backend
+ * @package    Page Builder Hub
  * @author     SolidBunch
  * @link       https://solidbunch.com
  * @version    Release: 1.0.0
@@ -26,6 +26,9 @@ class App {
 	/** @var array */
 	public $config;
 	
+	/** @var array */
+	public $modules;
+	
 	/** @var \stdClass */
 	public $Controller;
 	
@@ -36,7 +39,9 @@ class App {
 	public $View;
 	
 	private function __construct() {
+		add_action( 'init', [$this, 'init'] );
 	}
+	
 	
 	/**
 	 * @return App Singleton
@@ -52,43 +57,33 @@ class App {
 	/**
 	 * Run the theme
 	 **/
-	public function run() {
-		
-		// Load default config
-		$this->config = require get_template_directory() . '/app/config.php';
+	public function init() {
 		
 		// Translation support
-		load_theme_textdomain( 'starter-kit', get_template_directory() . '/languages' );
-		
-		// Load core classes
-		$this->_dispatch();
+		load_theme_textdomain( 'page-builder-hub', PBH_PLUGIN_DIR . '/languages' );
 		
 	}
 	
 	/**
-	 * Load and instantiate all application
-	 * classes necessary for this theme
+	 * Run the theme
 	 **/
-	private function _dispatch() {
+	public function run() {
 		
 		$this->Controller = new \stdClass();
 		$this->Model      = new \stdClass();
 		
-		// load dependency classes first
+		// Load dependency classes first
 		// View
 		$this->View = new View();
 		
-		// Model
-		$this->Model->Database = new Database();
-		
 		// Autoload models
-		$this->_load_modules( 'Model', '/' );
+		$this->load_modules( 'Model', '/' );
 		
 		// Autoload controllers
-		$this->_load_modules( 'Controller', '/' );
+		$this->load_modules( 'Controller', '/' );
 		
 		// Autoload widgets
-		utils::autoload_dir( get_template_directory() . '/app/Widgets', 1 );
+		utils::autoload_dir( PBH_PLUGIN_DIR . '/app/Widgets', 1 );
 	}
 	
 	/**
@@ -98,9 +93,9 @@ class App {
 	 * @param string
 	 * @param bool
 	 **/
-	private function _load_modules( $layer, $dir = '/' ) {
+	private function load_modules( $layer, $dir = '/' ) {
 		
-		$directory = get_template_directory() . '/app/' . $layer . $dir;
+		$directory = PBH_PLUGIN_DIR . '/app/' . $layer . $dir;
 		$handle    = opendir( $directory );
 		
 		while ( false !== ( $file = readdir( $handle ) ) ) {
@@ -111,13 +106,17 @@ class App {
 				
 				// Avoid recursion
 				if ( $class !== get_class( $this ) ) {
-					$classPath            = "\\StarterKit\\{$layer}\\{$class}";
+					$classPath            = "\\PBH\\{$layer}\\{$class}";
 					$this->$layer->$class = new $classPath();
 				}
 				
 			}
 		}
 		
+	}
+	
+	public function addons_dirs() {
+		return apply_filters( 'pbh/addons-dirs', [PBH_PLUGIN_DIR . '/addons'] );
 	}
 	
 	private function __clone() {
