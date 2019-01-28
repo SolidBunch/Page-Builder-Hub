@@ -53,14 +53,11 @@ class Gutenberg {
 	 */
 	public function register_block_category( $categories ) {
 		
-		//dump( $categories );
 		$categories[] = [
-			'slug'  => 'pbh',
-			'title' => __( 'Page Builder Hub', '{domain}' ),
+			'slug'  => 'pbh-blocks',
+			'title' => __( 'Page Builder Hub :: Blocks', '{domain}' ),
 			'icon'  => null,
 		];
-		
-		//dd($categories);
 		
 		return $categories;
 	}

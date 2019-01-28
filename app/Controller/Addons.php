@@ -36,7 +36,7 @@ class Addons {
 		}
 		*/
 		
-		add_action( 'init', array( $this, 'load' ) );
+		add_action( 'plugins_loaded', array( $this, 'load' ) );
 		add_action( 'wp_footer', array( $this, 'footer' ) );
 
 	}
