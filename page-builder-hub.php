@@ -98,3 +98,17 @@ if ( ! function_exists( 'PBH' ) ) {
 	
 }
 PBH()->run();
+
+function my_plugin_allowed_block_types( $allowed_block_types, $post ) {
+    //dump($allowed_block_types);
+    //dump($post);
+
+    /*
+    if ( $post->post_type !== 'post' ) {
+        return $allowed_block_types;
+    }
+    */
+    return array( 'core/paragraph' );
+}
+
+//add_filter( 'allowed_block_types', 'my_plugin_allowed_block_types', 10000, 2 );

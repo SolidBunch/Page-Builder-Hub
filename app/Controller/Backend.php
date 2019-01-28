@@ -23,14 +23,19 @@ class Backend {
 	 **/
 	public function __construct() {
 
+        if (!is_admin()) return;
+
 		// load admin assets
-		add_action( 'admin_enqueue_scripts', array( $this, 'load_assets' ) );
+		add_action( 'admin_enqueue_scripts', [$this, 'load_assets'] );
+
+		// Load assets for editor
+        //add_action( 'enqueue_block_editor_assets', [$this, 'block_editor_assets'] );
 		
 		//add_action( 'admin_init', [ $this, 'admin_init' ] );
 		add_action( 'admin_menu', [ $this, 'admin_menu' ] );
 
 		// Change theme options default menu position
-		add_action( 'fw_backend_add_custom_settings_menu', array( $this, 'add_theme_options_menu' ) );
+		//add_action( 'fw_backend_add_custom_settings_menu', array( $this, 'add_theme_options_menu' ) );
 
 	}
 	
@@ -60,6 +65,14 @@ class Backend {
 			false, PBH()->config['cache_time'] );
 	}
 
+    public function block_editor_assets() {
+        wp_enqueue_style( 'page-builder-hub-blocks', PBH_PLUGIN_URL . '/assets/css/blocks.css',
+            false, PBH()->config['cache_time'] );
+        wp_enqueue_script( 'page-builder-hub-blocks', PBH_PLUGIN_URL . '/assets/js/blocks.js',
+            ['jquery', 'wp-blocks', 'wp-dom-ready', 'wp-edit-post'], PBH()->config['cache_time'] );
+    }
+
+
 	/**
 	 * Add Website Options Menu
 	 *
@@ -80,3 +93,4 @@ class Backend {
 	}
 
 }
+
