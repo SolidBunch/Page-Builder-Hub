@@ -1,14 +1,11 @@
 <?php
 namespace PBH\Controller;
 
-use PBH\Model\Shortcode;
-use PBH\Helper\Utils;
-
 /**
- * Shortcodes controller
+ * Addons controller
  *
  * @category   Wordpress
- * @package    Starter Kit Backend
+ * @package    Page Builder Hub
  * @author     SolidBunch
  * @link       https://solidbunch.com
  * @version    Release: 1.0.0
@@ -17,8 +14,6 @@ use PBH\Helper\Utils;
 class Addons {
 
 	public $addons = [];
-
-	public $custom_css = [];
 
 	/**
 	 * Constructor - add all needed actions
@@ -40,32 +35,21 @@ class Addons {
 		add_action( 'wp_footer', array( $this, 'footer' ) );
 
 	}
-	
-	
-	
 
 	/**
-	 * Load shortcodes
+	 * Load addons
 	 *
 	 * @return void
 	 **/
 	public function load() {
 
-		$this->addons['gutenberg'] = PBH()->Controller->Gutenberg->load();
-		
+		// Load Gutenberg blocks
+		PBH()->Controller->Gutenberg->load();
+		$this->addons['gutenberg'] = PBH()->Controller->Gutenberg->addons;
+
 	}
 
 
 	public function footer() {
-
-		echo '<style>';
-		echo implode('', $this->custom_css);
-		echo '</style>';
-		/*
-		if (!empty($this->custom_css)) {
-			wp_add_inline_style( 'custom-style', implode('', $this->custom_css) );
-		}
-		*/
 	}
-
 }

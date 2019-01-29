@@ -76,14 +76,8 @@ class App {
 		// View
 		$this->View = new View();
 		
-		// Autoload models
-		$this->load_modules( 'Model', '/' );
-		
 		// Autoload controllers
 		$this->load_modules( 'Controller', '/' );
-		
-		// Autoload widgets
-		utils::autoload_dir( PBH_PLUGIN_DIR . '/app/Widgets', 1 );
 	}
 	
 	/**
@@ -116,7 +110,9 @@ class App {
 	}
 	
 	public function addons_dirs() {
+		do_action('pbh/addons-dirs1');
 		return apply_filters( 'pbh/addons-dirs', [PBH_PLUGIN_DIR . '/addons'] );
+
 	}
 	
 	private function __clone() {

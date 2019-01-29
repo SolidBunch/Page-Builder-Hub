@@ -1,10 +1,12 @@
 <?php
 namespace PBH\Controller;
 
+use PBH\Controller\Abstracts\AddonAbstract;
+
 /**
  * Gutenberg Controller
  *
- * Rewrite default Visual Composer functions
+ * Controller for Gutenberg blocks
  *
  * @category   Wordpress
  * @package    Page Builder Hub
@@ -13,12 +15,23 @@ namespace PBH\Controller;
  * @version    Release: 1.0.0
  * @since      Class available since Release 1.0.0
  */
-class Gutenberg {
+
+class Gutenberg extends AddonAbstract {
+
+	public $addons = [];
 
 	/**
 	 * Constructor
 	 **/
 	public function __construct() {
+	    parent::__construct();
+
+		/*
+		if ( ! function_exists( 'register_block_type' ) ) {
+			// Gutenberg is not active.
+			return;
+		}
+		*/
 
 		// add block category
 		add_filter( 'block_categories', [ $this, 'register_block_category' ] );
@@ -40,8 +53,18 @@ class Gutenberg {
 			
 			foreach ( $dirs as $dir ) {
 				$fname = $dir . '/init.php';
+				$slug = basename($dir);
 				if (file_exists($fname)) {
 					require_once( $fname );
+					$className            = 'PBH_'.$slug.'_Gutenberg';
+					if (class_exists($className)) {
+						$this->addons[$slug] = [
+							'info' => [],
+							'instance' => new $className()
+						];
+						$this->addons[$slug]['instance']->init();
+					}
+
 				}
 			}
 		}
@@ -52,7 +75,7 @@ class Gutenberg {
 	 * Add block category (Gutenberg)
 	 */
 	public function register_block_category( $categories ) {
-		
+
 		$categories[] = [
 			'slug'  => 'pbh-blocks',
 			'title' => __( 'Page Builder Hub :: Blocks', '{domain}' ),

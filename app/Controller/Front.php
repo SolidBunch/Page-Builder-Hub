@@ -74,12 +74,6 @@ class Front {
 	 **/
 	public function load_assets() {
 
-        wp_enqueue_style(
-            'page-builder-hub-blocks',
-            PBH_PLUGIN_URL . '/assets/css/blocks.css',
-            false, PBH()->config['cache_time']
-        );
-
 	    /*
 		// add support for visual composer animations, row stretching, parallax etc
 		if ( function_exists( 'vc_asset_url' ) ) {
