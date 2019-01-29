@@ -34,44 +34,52 @@ class Gutenberg extends AddonAbstract {
 		// ---------------------------------------------------------------------------------
 		// Editor Scripts
 		// ---------------------------------------------------------------------------------
-		$this->register_script(
-			'pbh-blocks-'.$this->slug.'-editor', // Handle
-			$this->url . '/assets/js/block.build.min.js',
-			[ 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-components' ],
-			filemtime( $this->dir . '/assets/js/block.build.min.js' ),
-			true
-		);
+		if (file_exists($this->dir . '/assets/js/block.build.min.js')) {
+			$this->register_script(
+				'pbh-blocks-' . $this->slug . '-editor', // Handle
+				$this->url . '/assets/js/block.build.min.js',
+				['wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-components'],
+				filemtime($this->dir . '/assets/js/block.build.min.js'),
+				true
+			);
+		}
 
 		// ---------------------------------------------------------------------------------
 		// Front Scripts ( enqueued at both : front and back )
 		// ---------------------------------------------------------------------------------
-		$this->register_script(
-			'pbh-blocks-'.$this->slug.'-editor', // Handle
-			$this->url . '/assets/js/block.build.min.js',
-			[ 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-components' ],
-			filemtime( $this->dir . '/assets/js/block.build.min.js' ),
-			true
-		);
+		if (file_exists($this->dir . '/assets/js/scripts.min.js')) {
+			$this->register_script(
+				'pbh-blocks-' . $this->slug . '-front', // Handle
+				$this->url . '/assets/js/scripts.min.js',
+				['jquery'],
+				filemtime($this->dir . '/assets/js/scripts.min.js'),
+				true
+			);
+		}
 
 		// ---------------------------------------------------------------------------------
 		// Editor Styles
 		// ---------------------------------------------------------------------------------
-		$this->register_style(
-			'pbh-blocks-'.$this->slug.'-editor',
-			$this->url . '/assets/css/block-editor.min.css',
-			[ 'wp-edit-blocks' ],
-			filemtime( $this->dir . '/assets/css/block-editor.min.css' )
-		);
+		if (file_exists($this->dir . '/assets/css/block-editor.min.css')) {
+			$this->register_style(
+				'pbh-blocks-' . $this->slug . '-editor',
+				$this->url . '/assets/css/block-editor.min.css',
+				['wp-edit-blocks'],
+				filemtime($this->dir . '/assets/css/block-editor.min.css')
+			);
+		}
 
 		// ---------------------------------------------------------------------------------
 		// Front Styles ( enqueued at both : front and back )
 		// ---------------------------------------------------------------------------------
-		$this->register_style(
-			'pbh-blocks-'.$this->slug.'-front',
-			$this->url . '/assets/css/block-style.min.css',
-			[],
-			filemtime( $this->dir . '/assets/css/block-style.min.css' )
-		);
+		if (file_exists($this->dir . '/assets/css/block-style.min.css')) {
+			$this->register_style(
+				'pbh-blocks-' . $this->slug . '-front',
+				$this->url . '/assets/css/block-style.min.css',
+				[],
+				filemtime($this->dir . '/assets/css/block-style.min.css')
+			);
+		}
 
 		// ---------------------------------------------------------------------------------
 		// TRANSLATION ( since WP 5.0 )
