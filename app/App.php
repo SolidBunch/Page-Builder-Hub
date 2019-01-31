@@ -3,7 +3,6 @@
 namespace PBH;
 
 use PBH\Helper\Utils;
-use PBH\Model\Database;
 use PBH\View\View;
 
 /**

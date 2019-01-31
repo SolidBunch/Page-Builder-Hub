@@ -56,7 +56,7 @@ class Gutenberg extends AddonAbstract {
 				$slug = basename($dir);
 				if (file_exists($fname)) {
 					require_once( $fname );
-					$className            = 'PBH_'.$slug.'_Gutenberg';
+					$className = 'PBH_'.$slug.'_Gutenberg';
 					if (class_exists($className)) {
 						$this->addons[$slug] = [
 							'info' => [],

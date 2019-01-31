@@ -1,8 +1,6 @@
 <?php
 
-namespace PBH\Model;
-
-use PBH\Model\Abstracts\AddonAbstract;
+namespace PBH\Model\Abstracts;
 
 /**
  * Gutenberg addon model
@@ -14,16 +12,25 @@ use PBH\Model\Abstracts\AddonAbstract;
  * @version    Release: 1.0.0
  * @since      Class available since Release 1.0.0
  */
-class Gutenberg extends AddonAbstract {
+abstract class GutenbergAbstract extends AddonAbstract {
 	
 	
 	public function __construct() {
 		parent::__construct();
 		
-		add_action( 'init', [ $this, 'register_block_type' ] );
 	}
 	
 	public function init() {
+		add_action( 'init', [ $this, 'run' ] );
+		$this->enqueue_additional_assets();
+	}
+	
+	public function run() {
+		
+		if ( ! function_exists( 'register_block_type' ) ) {
+			// Gutenberg is not active.
+			return;
+		}
 		
 		load_plugin_textdomain( 'pbh-blocks-' . $this->slug, false, $this->dir . '/languages' );
 		
@@ -82,6 +89,11 @@ class Gutenberg extends AddonAbstract {
 		}
 		
 		// ---------------------------------------------------------------------------------
+		// Register Block Type
+		// ---------------------------------------------------------------------------------
+		$this->register_block_type();
+		
+		// ---------------------------------------------------------------------------------
 		// TRANSLATION ( since WP 5.0 )
 		// May be extended to wp_set_script_translations( 'my-handle', 'my-domain', plugin_dir_path( MY_PLUGIN ) . 'languages' ) ).
 		// For details see * https://make.wordpress.org/core/2018/11/09/new-javascript-i18n-support-in-wordpress/
@@ -94,14 +106,59 @@ class Gutenberg extends AddonAbstract {
 	
 	/**
 	 * Register Block Type
+	 * Must be overriding at add-on
 	 */
-	public function register_block_type() {
-		register_block_type( 'pbh-blocks/' . $this->slug, [
-			'editor_script' => 'pbh-blocks-' . $this->slug . '-editor', // backend only
-			'editor_style'  => 'pbh-blocks-' . $this->slug . '-editor', // backend only
-			'style'         => 'pbh-blocks-' . $this->slug . '-front',  // backend + frontend
-			'script'        => 'pbh-blocks-' . $this->slug . '-front',  // backend + frontend
+	public function register_block_type() { }
+	
+	
+	/**
+	 * Enqueue additional assets
+	 * Must be overriding at add-on
+	 */
+	public function enqueue_additional_assets() {
+		// --------------------------------------------------------------
+		//  Example to enqueue additional assets (plugins such as slick) 
+		// --------------------------------------------------------------
+		/*
+		// enqueue back-end assets only
+		$this->enqueue_block_editor_assets( [
+			[
+				'type'          => 'script',
+				'handle_suffix' => 'slick',
+				'filename'      => 'slack_alert.js',
+				// .. OPTIONAL
+			],
+			[
+				'type'          => 'style',
+				'handle_suffix' => 'slick',
+				'filename'      => 'slack_alert.css',
+				'deps'          => [ 'wp-edit-blocks' ], // OPTIONAL
+				// .. OPTIONAL
+			]
 		] );
+		
+		// load both front-end + back-end assets
+		$this->enqueue_block_assets( [
+			[
+				'type'          => 'script',
+				'target'        => 'frontend', // 'backend', 'frontend', 'all'
+				'handle_suffix' => 'slick',
+				'filename'      => 'slack_alert2.js',
+				'deps'          => [ 'jquery' ], // OPTIONAL
+				'ver'           => 1111,         // OPTIONAL
+				'in_footer'     => true          // OPTIONAL
+			],
+			[
+				'type'          => 'style',
+				'target'        => 'frontend', // 'backend', 'frontend', 'all'
+				'handle_suffix' => 'slick',
+				'filename'      => 'slack_alert2.css',
+				'deps'          => [],   // OPTIONAL,  [] - frontend,  [ 'wp-edit-blocks' ] - backend 
+				'ver'           => 1111, // OPTIONAL
+				'media'         => 'all' // OPTIONAL
+			]
+		] );
+		*/
 	}
 	
 	
