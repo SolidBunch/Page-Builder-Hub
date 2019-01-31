@@ -106,9 +106,19 @@ abstract class GutenbergAbstract extends AddonAbstract {
 	
 	/**
 	 * Register Block Type
-	 * Must be overriding at add-on
+	 * May be overriding at add-on for change standard functionality or for dynamic Block 
 	 */
-	public function register_block_type() { }
+	public function register_block_type() {
+		
+		register_block_type( "pbh-blocks/{$this->slug}", [
+			'editor_script' => "pbh-blocks-{$this->slug}-editor", // backend only
+			'editor_style'  => "pbh-blocks-{$this->slug}-editor", // backend only
+			'style'         => "pbh-blocks-{$this->slug}-front",  // backend + frontend
+			'script'        => "pbh-blocks-{$this->slug}-front",  // backend + frontend
+			//'attributes'      => [],               // for dynamic Block, method must be overriding at add-on
+			//'render_callback' => function () {},   // for dynamic Block, method must be overriding at add-on
+		] );
+	}
 	
 	
 	/**
