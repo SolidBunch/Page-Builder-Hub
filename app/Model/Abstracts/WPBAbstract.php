@@ -1,5 +1,5 @@
 <?php
-namespace PBH\Model;
+namespace PBH\Model\Abstracts;
 
 use PBH\Helper\Utils;
 
@@ -13,7 +13,7 @@ use PBH\Helper\Utils;
  * @version    Release: 1.0.0
  * @since      Class available since Release 1.0.0
  */
-class Shortcode {
+class WPBAbstract extends AddonAbstract {
 
 	/**
 	 * Shortcode name
@@ -28,12 +28,12 @@ class Shortcode {
 	/**
 	 * Shortcode directory
 	 */
-	public $shortcode_dir;
+	public $dir;
 
 	/**
 	 * Shortcode URI
 	 */
-	public $shortcode_uri;
+	public $uri;
 
 	/**
 	 * Shortcode constructor.
@@ -41,6 +41,8 @@ class Shortcode {
 	 * @param $data
 	 */
 	public function __construct($data=null) {
+		parent::__construct();
+		
 		if ($data) {
 			$this->shortcode = $data['config']['base'];
 			$this->shortcode_dir = $data['shortcode_dir'];
@@ -129,6 +131,10 @@ class Shortcode {
 			// Add shortcode to VC
 			require_once( $this->shortcode_dir . '/vc.php' );
 		}
+	}
+	
+	public function content($shortcode, $atts, $content="") {
+		return $this->shortcodes[$shortcode]->content($atts, $content);
 	}
 
 	/**

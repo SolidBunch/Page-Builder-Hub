@@ -16,7 +16,7 @@ use PBH\Helper\Utils;
  */
 class WPB extends AddonAbstract {
 	
-	public $addons = [];
+	public $shortcodes = [];
 
 	public $custom_css = [];
 
@@ -29,10 +29,10 @@ class WPB extends AddonAbstract {
 		parent::__construct();
 
 		if ( Utils::is_vc() ) {
-			add_action( 'vc_after_init', array( $this, 'load' ) );
+			//add_action( 'vc_after_init', array( $this, 'load' ) );
 		} else {
-			add_action( 'init', array( $this, 'load' ) );
-			add_action( 'wp_footer', array( $this, 'footer' ) );
+			//add_action( 'init', array( $this, 'load' ) );
+			//add_action( 'wp_footer', array( $this, 'footer' ) );
 		}
 
 	}
@@ -44,31 +44,36 @@ class WPB extends AddonAbstract {
 	 **/
 	public function load() {
 
-		$dirs = glob( get_template_directory() . '/app/Shortcodes/*', GLOB_ONLYDIR );
-
-		foreach ( $dirs as $shortcode_dir ) {
-
-			$parent = basename($shortcode_dir);
-
-			// Load childs shortcodes if exist
-			$childs = [];
-			if (is_dir($shortcode_dir.'/childs')) {
-				$dirs_childs = glob( $shortcode_dir.'/childs/*', GLOB_ONLYDIR );
-				foreach ( $dirs_childs as $shortcode_child_dir ) {
-					$shortcode = $this->load_shortcode( $shortcode_child_dir, $parent );
-					$childs[] = $shortcode->shortcode;
+		$addons_dirs = PBH()->addons_dirs();
+		//dd($addons_dirs);
+		
+		foreach($addons_dirs as $addon_dir) {
+			$dirs = glob( $addon_dir . '/wpb/*', GLOB_ONLYDIR );
+			
+			foreach ( $dirs as $shortcode_dir ) {
+				$fname  = $shortcode_dir . '/init.php';
+				$parent = basename( $shortcode_dir );
+				
+				if ( file_exists( $fname ) ) {
+					// Load childs shortcodes if exist
+					$childs = [];
+					if ( is_dir( $shortcode_dir . '/childs' ) ) {
+						$dirs_childs = glob( $shortcode_dir . '/childs/*', GLOB_ONLYDIR );
+						foreach ( $dirs_childs as $shortcode_child_dir ) {
+							$shortcode = $this->load_shortcode( $shortcode_child_dir, $parent );
+							$childs[]  = $shortcode->shortcode;
+						}
+					}
+					// Load shortcode
+					$this->load_shortcode( $shortcode_dir, '', $childs );
 				}
 			}
-
-			// Load shortcode
-			$this->load_shortcode($shortcode_dir, '', $childs);
-
-
 		}
+		
 	}
 
 	public function load_shortcode($shortcode_dir, $parent='', $childs=[]) {
-		$config = require_once( $shortcode_dir . '/config.php' );
+		$config = include( $shortcode_dir . '/config.php' );
 
 		// Add childs shortcodes to container config
 		if (!empty($childs) && isset($config['as_parent'])) {
@@ -80,9 +85,9 @@ class WPB extends AddonAbstract {
 		}
 
 		//dump($config);
-		require_once( $shortcode_dir . '/shortcode.php' );
+		require_once( $shortcode_dir . '/init.php' );
 
-		$class_name = 'StarterKitShortcode_'.str_replace('-','_',$config['base']);
+		$class_name = 'PBH_'.str_replace('-','_',$config['base']).'_WPB';
 		if (class_exists($class_name)) {
 			$this->shortcodes[ $config['base'] ] = new $class_name ( array(
 				'config'        => $config,
@@ -97,9 +102,7 @@ class WPB extends AddonAbstract {
 	}
 
 
-	public function content($shortcode, $atts, $content="") {
-		return $this->shortcodes[$shortcode]->content($atts, $content);
-	}
+	
 
 	public function footer() {
 
