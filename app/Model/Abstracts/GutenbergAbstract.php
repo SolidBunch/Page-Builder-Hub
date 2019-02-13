@@ -255,6 +255,13 @@ abstract class GutenbergAbstract extends AddonAbstract {
 					
 					$asset = wp_parse_args( $asset, $defaults );
 					
+					if ( empty($asset['target']) ||
+					     ($asset['target'] === 'backend' && is_admin()) ||
+					     ($asset['target'] === 'frontend' && !is_admin())
+					) {
+						wp_enqueue_script( $handle, $url, $asset['deps'], $asset['ver'], $asset['in_footer'] );
+					}
+					
 					switch ( $asset['target'] ) {
 						case 'backend':
 							if ( is_admin() ) {
