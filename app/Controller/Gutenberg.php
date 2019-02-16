@@ -1,7 +1,7 @@
 <?php
 namespace PBH\Controller;
 
-use PBH\Controller\Abstracts\AddonAbstract;
+use PBH\Controller\Abstracts\AddonControllerAbstract;
 
 /**
  * Gutenberg Controller
@@ -16,7 +16,7 @@ use PBH\Controller\Abstracts\AddonAbstract;
  * @since      Class available since Release 1.0.0
  */
 
-class Gutenberg extends AddonAbstract {
+class Gutenberg extends AddonControllerAbstract {
 
 	public $addons = [];
 
@@ -32,7 +32,9 @@ class Gutenberg extends AddonAbstract {
 			return;
 		}
 		*/
-
+		
+		add_action( 'plugins_loaded', array( $this, 'load' ) );
+		
 		// add block category
 		add_filter( 'block_categories', [ $this, 'register_block_category' ] );
 	}
@@ -68,6 +70,10 @@ class Gutenberg extends AddonAbstract {
 				}
 			}
 		}
+		//dump( $this->addons );
+		
+		// Add addons to custom addons controller
+		PBH()->Controller->Addons->addons['gutenberg'] = $this->addons;
 	}
 	
 	
@@ -81,7 +87,7 @@ class Gutenberg extends AddonAbstract {
 			'title' => __( 'Page Builder Hub :: Blocks', '{domain}' ),
 			'icon'  => null,
 		];
-		
+
 		return $categories;
 	}
 

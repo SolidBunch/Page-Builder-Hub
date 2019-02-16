@@ -12,7 +12,7 @@ namespace PBH\Controller\Abstracts;
  * @since      Class available since Release 1.0.0
  */
 
-abstract class AddonAbstract {
+abstract class AddonControllerAbstract {
 
 	/**
 	 * Constructor

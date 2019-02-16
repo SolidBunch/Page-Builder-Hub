@@ -2,7 +2,6 @@
 
 namespace PBH;
 
-use PBH\Helper\Utils;
 use PBH\View\View;
 
 /**
@@ -69,7 +68,7 @@ class App {
 	public function run() {
 		
 		$this->Controller = new \stdClass();
-		$this->Model      = new \stdClass();
+		//$this->Model      = new \stdClass();
 		
 		// Load dependency classes first
 		// View

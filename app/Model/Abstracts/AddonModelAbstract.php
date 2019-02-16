@@ -12,7 +12,7 @@ namespace PBH\Model\Abstracts;
  * @since      Class available since Release 1.0.0
  */
 
-abstract class AddonAbstract {
+abstract class AddonModelAbstract {
 	/**
 	 * Addon name
 	 */
@@ -61,6 +61,7 @@ abstract class AddonAbstract {
 	public function __construct() {
 
 	}
+	
 	/**
 	 * Register style
 	 */
@@ -73,6 +74,13 @@ abstract class AddonAbstract {
 			'media'  => $media
 		];
 		wp_register_style( $handle, $src, $deps, $ver, $media );
+	}
+	
+	/**
+	 * Enqueue style
+	 */
+	public function enqueue_style( $handle, $src = '', $deps = array(), $ver = false, $media = 'all' ) {
+		wp_enqueue_style( $handle, $src, $deps, $ver, $media );
 	}
 
 	/**
@@ -87,6 +95,13 @@ abstract class AddonAbstract {
 			'in_footer'  => $in_footer
 		];
 		wp_register_script( $handle, $src, $deps, $ver, $in_footer );
+	}
+	
+	/**
+	 * Enqueue script
+	 */
+	public function enqueue_script( $handle, $src = '', $deps = array(), $ver = false, $in_footer = false ) {
+		wp_enqueue_script( $handle, $src, $deps, $ver, $in_footer );
 	}
 
 	/**

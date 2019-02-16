@@ -1,25 +1,22 @@
 <?php
 namespace PBH\Controller;
 
-use PBH\Controller\Abstracts\AddonAbstract;
-use PBH\Helper\Utils;
+use PBH\Controller\Abstracts\AddonControllerAbstract;
 
 /**
  * WPBakery Page Builder controller
  *
  * @category   Wordpress
- * @package    Starter Kit Backend
+ * @package    Page Builder Hub
  * @author     SolidBunch
  * @link       https://solidbunch.com
  * @version    Release: 1.0.0
  * @since      Class available since Release 1.0.0
  */
-class WPB extends AddonAbstract {
+class WPB extends AddonControllerAbstract {
 	
 	public $shortcodes = [];
-
-	public $custom_css = [];
-
+	
 	/**
 	 * Constructor
 	 *
@@ -28,11 +25,10 @@ class WPB extends AddonAbstract {
 	public function __construct() {
 		parent::__construct();
 
-		if ( Utils::is_vc() ) {
-			//add_action( 'vc_after_init', array( $this, 'load' ) );
-		} else {
-			//add_action( 'init', array( $this, 'load' ) );
-			//add_action( 'wp_footer', array( $this, 'footer' ) );
+		// Load only if WPB Page Builder is active
+		if ( class_exists( 'WPBakeryShortCode' ) ) {
+			
+			add_action( 'vc_after_init', array( $this, 'load' ) );
 		}
 
 	}
@@ -45,7 +41,6 @@ class WPB extends AddonAbstract {
 	public function load() {
 
 		$addons_dirs = PBH()->addons_dirs();
-		//dd($addons_dirs);
 		
 		foreach($addons_dirs as $addon_dir) {
 			$dirs = glob( $addon_dir . '/wpb/*', GLOB_ONLYDIR );
@@ -70,11 +65,15 @@ class WPB extends AddonAbstract {
 			}
 		}
 		
+		// Add addons to custom addons controller
+		PBH()->Controller->Addons->addons['wpb'] = $this->shortcodes;
+		
+		//dump( $this->shortcodes );
 	}
 
 	public function load_shortcode($shortcode_dir, $parent='', $childs=[]) {
 		$config = include( $shortcode_dir . '/config.php' );
-
+		
 		// Add childs shortcodes to container config
 		if (!empty($childs) && isset($config['as_parent'])) {
 			$only = explode(',', $config['as_parent']['only']);
@@ -86,33 +85,25 @@ class WPB extends AddonAbstract {
 
 		//dump($config);
 		require_once( $shortcode_dir . '/init.php' );
-
-		$class_name = 'PBH_'.str_replace('-','_',$config['base']).'_WPB';
+		
+		$class_name = str_replace('-','_',$config['base']).'_WPB';
 		if (class_exists($class_name)) {
 			$this->shortcodes[ $config['base'] ] = new $class_name ( array(
-				'config'        => $config,
-				'shortcode_dir' => $shortcode_dir,
-				'shortcode_uri' => Utils::get_shortcodes_uri(
-					!$parent ? $config['base']:$parent.'/childs/'.$config['base']
-				)
-
+				'config'    => $config
 			) );
 			return $this->shortcodes[ $config['base'] ];
 		}
 	}
-
-
 	
-
-	public function footer() {
-
-		echo '<style>';
-		echo implode('', $this->custom_css);
-		echo '</style>';
-	
-		//if (!empty($this->custom_css)) {
-		//	wp_add_inline_style( 'custom-style', implode('', $this->custom_css) );
-		//}
+	/**
+	 * Get shortcode content. Made for calling inside WPBakeryShortCode class
+	 * @param $shortcode
+	 * @param $atts
+	 * @param string $content
+	 *
+	 * @return mixed
+	 */
+	public function content($shortcode, $atts, $content="") {
+		return $this->shortcodes[$shortcode]->content($atts, $content);
 	}
-
 }

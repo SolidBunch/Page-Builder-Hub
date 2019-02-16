@@ -22,18 +22,6 @@ class Addons {
 	 **/
 	public function __construct() {
 
-		/*
-		if ( Utils::is_vc() ) {
-			add_action( 'vc_after_init', array( $this, 'load' ) );
-		} else {
-			add_action( 'init', array( $this, 'load' ) );
-			add_action( 'wp_footer', array( $this, 'footer' ) );
-		}
-		*/
-		
-		add_action( 'plugins_loaded', array( $this, 'load' ) );
-		add_action( 'wp_footer', array( $this, 'footer' ) );
-
 	}
 
 	/**
@@ -42,10 +30,18 @@ class Addons {
 	 * @return void
 	 **/
 	public function load() {
+		/*
 
 		// Load Gutenberg blocks
 		PBH()->Controller->Gutenberg->load();
 		$this->addons['gutenberg'] = PBH()->Controller->Gutenberg->addons;
+		
+		// Load WPBakery Page Builder shortcodes
+		if ( class_exists( 'WPBakeryShortCode' ) ) {
+			PBH()->Controller->WPB->load();
+			$this->addons['wpb'] = PBH()->Controller->WPB->shortcodes;
+		}
+		*/
 
 	}
 

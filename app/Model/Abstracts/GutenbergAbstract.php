@@ -12,7 +12,7 @@ namespace PBH\Model\Abstracts;
  * @version    Release: 1.0.0
  * @since      Class available since Release 1.0.0
  */
-abstract class GutenbergAbstract extends AddonAbstract {
+abstract class GutenbergAbstract extends AddonModelAbstract {
 	
 	
 	public function __construct() {

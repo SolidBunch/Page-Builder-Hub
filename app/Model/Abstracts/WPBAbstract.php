@@ -13,58 +13,43 @@ use PBH\Helper\Utils;
  * @version    Release: 1.0.0
  * @since      Class available since Release 1.0.0
  */
-class WPBAbstract extends AddonAbstract {
-
-	/**
-	 * Shortcode name
-	 */
-	public $shortcode;
-
-	/**
-	 * Shortcode config
-	 */
-	public $config;
-
-	/**
-	 * Shortcode directory
-	 */
-	public $dir;
-
-	/**
-	 * Shortcode URI
-	 */
-	public $uri;
+class WPBAbstract extends AddonModelAbstract {
 
 	/**
 	 * Shortcode constructor.
 	 *
 	 * @param $data
 	 */
-	public function __construct($data=null) {
+	public function __construct($data) {
+		
+		if (isset($data['config'])) {
+			$this->config = $data['config'];
+			if ( isset($this->config['icon']) ) $this->config['icon'] = $this->url . $this->config['icon'];
+		}
+		
 		parent::__construct();
 		
-		if ($data) {
-			$this->shortcode = $data['config']['base'];
-			$this->shortcode_dir = $data['shortcode_dir'];
-			$this->shortcode_uri = $data['shortcode_uri'];
-			$this->config = $data['config'];
+		// Add Visual Composer shortcode support
+		if ( file_exists($this->dir . '/wpb.php')) {
+			
+			// Add shortcode map
+			vc_map( $this->config );
 
-			if ( Utils::is_vc() ) {
-				$this->vc_shortcode();
-			} else {
-				$this->wp_shortcode();
-			}
-
+			// Add shortcode to VC
+			require_once( $this->dir . '/wpb.php' );
+			
 			// Add AJAX script
-			if (file_exists($this->shortcode_dir . '/ajax.php')) {
-				require_once( $this->shortcode_dir . '/ajax.php' );
+			if (file_exists($this->dir . '/ajax.php')) {
+				require_once( $this->dir . '/ajax.php' );
+			}
+			
+			// Register assets
+			if (is_admin()) {
+				$this->admin_assets();
+			} else {
+				$this->front_assets();
 			}
 		}
-	}
-
-	public function custom_css_class($param_value, $prefix = '') {
-		$css_class = preg_match( '/\s*\.([^\{]+)\s*\{\s*([^\}]+)\s*\}\s*/', $param_value ) ? $prefix . preg_replace( '/\s*\.([^\{]+)\s*\{\s*([^\}]+)\s*\}\s*/', '$1', $param_value ) : '';
-		return $css_class;
 	}
 
 	/**
@@ -77,17 +62,9 @@ class WPBAbstract extends AddonAbstract {
 	public function atts($atts) {
 		//if (!isset($atts['classes'])) $atts['classes'] = '';
 
-		if (!empty($atts['css'])) {
-			if (Utils::is_vc() && function_exists('vc_shortcode_custom_css_class') ) {
-				$css_class = trim( apply_filters( VC_SHORTCODE_CUSTOM_CSS_FILTER_TAG, vc_shortcode_custom_css_class( $atts['css'], ' ' ), $this->shortcode, $atts ) );
-			} else {
-				$css_class = $this->custom_css_class($atts['css']);
-				if (!empty($css_class)) {
-					PBH()->Controller->Shortcodes->custom_css[] = $atts['css'];
-				}
-			}
-			//dump( $this->shortcode );
-			//dump($css_class);
+		if ( !empty($atts['css']) ) {
+			$css_class = trim( apply_filters( VC_SHORTCODE_CUSTOM_CSS_FILTER_TAG, vc_shortcode_custom_css_class( $atts['css'], ' ' ), $this->slug, $atts ) );
+			
 			$atts['classes'] = $css_class . ' ' . trim(!empty( $atts['classes'] ) && trim( $atts['classes'] ) ? $atts['classes']:'');
 		}
 		//dump($atts);
@@ -109,35 +86,6 @@ class WPBAbstract extends AddonAbstract {
 	}
 
 	/**
-	 * Add native Wordpress shortcode support
-	 *
-	 */
-	public function wp_shortcode() {
-		global $shortcode_tags;
-		//dump($shortcode_tags);
-		add_shortcode($this->shortcode, array($this, 'content') );
-	}
-
-	/**
-	 * Add Visual Composer shortcode support
-	 *
-	 */
-	public function vc_shortcode() {
-
-		if ( class_exists( 'WPBakeryShortCode' ) && file_exists($this->shortcode_dir . '/vc.php')) {
-			// Add shortcode map
-			vc_map( $this->config );
-
-			// Add shortcode to VC
-			require_once( $this->shortcode_dir . '/vc.php' );
-		}
-	}
-	
-	public function content($shortcode, $atts, $content="") {
-		return $this->shortcodes[$shortcode]->content($atts, $content);
-	}
-
-	/**
 	 * Parse param group atts
 	 *
 	 * @see vc_param_group_parse_atts()
@@ -146,37 +94,75 @@ class WPBAbstract extends AddonAbstract {
 	 * @return array|mixed
 	 */
 	function param_group_parse_atts( $atts_string ) {
-		$array = json_decode( urldecode( $atts_string ), true );
-
-		return $array;
+		return json_decode( urldecode( $atts_string ), true );
 	}
-
+	
 	/**
-	 * Enqueue shortcode style
+	 * Register admin assets
+	 *
 	 */
-	public function enqueue_style( $handle, $src = '', $deps = array(), $ver = false, $media = 'all' ) {
-		wp_enqueue_style( $handle, $src, $deps, $ver, $media );
+	public function admin_assets() {
+		
+		// ---------------------------------------------------------------------------------
+		// Backend Scripts
+		// ---------------------------------------------------------------------------------
+		$fname = $this->dir . '/assets/js/backend.min.js';
+		if ( file_exists( $fname ) ) {
+			$this->enqueue_script(
+				'pbh-wpb-' . $this->slug . '-backend',
+				$this->url . '/assets/js/backend.min.js',
+				[],
+				filemtime( $fname ),
+				true
+			);
+		}
+		
+		// ---------------------------------------------------------------------------------
+		// Backend Styles
+		// ---------------------------------------------------------------------------------
+		$fname = $this->dir . '/assets/css/backend.min.css';
+		if ( file_exists( $fname ) ) {
+			$this->enqueue_style(
+				'pbh-wpb-' . $this->slug . '-backend',
+				$this->url . '/assets/css/backend.min.css',
+				[],
+				filemtime( $fname )
+			);
+		}
 	}
-
+	
 	/**
-	 * Enqueue shortcode script
+	 * Register front assets
+	 *
 	 */
-	public function enqueue_script( $handle, $src = '', $deps = array(), $ver = false, $in_footer = false ) {
-		wp_enqueue_script( $handle, $src, $deps, $ver, $in_footer );
-	}
+	public function front_assets() {
 
-	/**
-	 * Localize shortcode script
-	 */
-	public function localize_script( $handle, $object_name, $l10n ) {
-		wp_localize_script( $handle, $object_name, $l10n );
+		// ---------------------------------------------------------------------------------
+		// Front Scripts
+		// ---------------------------------------------------------------------------------
+		$fname = $this->dir . '/assets/js/scripts.min.js';
+		if ( file_exists( $fname ) ) {
+			$this->enqueue_script(
+				'pbh-wpb-' . $this->slug . '-front',
+				$this->url . '/assets/js/scripts.min.js',
+				[ 'jquery' ],
+				filemtime( $fname ),
+				true
+			);
+		}
+		
+		// ---------------------------------------------------------------------------------
+		// Front Styles
+		// ---------------------------------------------------------------------------------
+		$fname = $this->dir . '/assets/css/style.min.css';
+		
+		if ( file_exists( $fname ) ) {
+			$this->enqueue_style(
+				'pbh-wpb-' . $this->slug . '-front',
+				$this->url . '/assets/css/style.min.css',
+				[],
+				filemtime( $fname )
+			);
+		}
 	}
-
-	/**
-	 * Add inline script
-	 */
-	public function add_inline_script( $handle, $data, $position = 'after' ) {
-		wp_add_inline_script($handle, $data, $position);
-	}
-
 }
